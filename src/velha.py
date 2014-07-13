@@ -1,13 +1,37 @@
-from browser import html,doc
+"""
+############################################################
+Jogo da Velha
+############################################################
+
+:Author: *Davi Porto*
+:Author: *Ludmila Meirelles*
+:Contact: davi.ideiaop@gmail.com
+:Date: 2013/04/02
+:Status: This is a "work in progress"
+:Revision: 0.1.0
+:Copyright: 2013, `GPL <http://is.gd/3Udt>`__.
+
+Update - Bug fix, agora marca empate (velha)
+"""
+from browser import html, doc
 jogo = doc["main_container"]
-XO = ["http://indervilla.com/home/2013/01/Demon-Dracula-HD.jpg",
-"https://misteriosacontecem.files.wordpress.com/2011/07/steps_o_anjo.jpg"]
-BRANCO = ["http://images.fashion.me/Items/Item-1781866-500.jpg"]* 16
-PECAS = XO * 8
-LD = 40
+n=input('Digite o numero de lados que voce deseja que tenha o seu jogo da velha:' )
+n = int(n)
+XO = ["http://jimdscott.com/static/images/tic-tac-toe-O.png",
+"http://jimdscott.com/static/images/tic-tac-toe-X.png"]
+BRANCO = ["http://images.fashion.me/Items/Item-1781866-500.jpg"]*(n*n)
+PECAS = XO *((n*n)//2+1)
+LD = 30
 xo = [html.IMG(src=j, height=LD, width=LD) for j in PECAS]
 branco = [html.IMG(src=j, height=LD, width=LD) for j in BRANCO]
-tabuleiro = html.TABLE(border = 3)
+BLUE = 'http://www.clker.com/cliparts/Z/W/N/F/6/p/light-blue-square-md.png'
+blues = []
+for bl in range(12):
+ blue = html.IMG(src=BLUE, height=LD, width=LD)
+ blue.style.opacity = 0.3
+ blue.style.marginLeft = '-30px'
+ blues.append(blue)
+tabuleiro = html.TABLE(border = 2)
 campo = html.TBODY()
 jogo <= tabuleiro
 tabuleiro <= campo
@@ -20,38 +44,38 @@ class Casa:
         self.tipo_peca = 0
 
     def ganhou(self):
-        mp = matriz_tipo_pecas = [
-            uma_casa.tipo_peca
-            for uma_casa in
-            matriz_casas]
+        def tp(tira):
+           return [uma_casa.tipo_peca for uma_casa in tira]
+        mp = matriz_tipo_pecas = [uma_casa.tipo_peca for uma_casa in matriz_casas]
+        mp = matriz_casas
 
+        inc=1
+        tirasx = [mp[ini:ini+n:inc] for ini in range(0,((n-1)*n)+1,n)]
+        inc=n
+        tirasy = [mp[ini:ini+(((n-1)*n)+1):inc] for ini in range(0,n)]
 
-        barra=[mp[ini:ini+3*inc+3:inc] for inc, ini in [(3,3),(5,0)]]
+        barra = [mp[ini:ini+(n-1)*inc+(n-1):inc] for inc, ini in [(n-1,n-1),(n+1,0)]]
 
-        #metodo ganhou funcionando nas tirasX
-        inc = 1
-        tirasx =[mp[ini:ini+4:inc] for ini in range(0,14,4)]
+        possiveis = tirasx + tirasy + barra
+        ganhou = [tira for tira in possiveis
+        if (tp(tira) == n*[1]) or (tp(tira) == n*[2])]
 
-        #metodo ganhou funcionando nas tirasY
-        inc = 4
-        tirasy =[mp[ini:ini+14:inc] for ini in range(0,4)]
-
-
-        possiveis = barra + tirasx + tirasy
-        ganhou = any ([(tira == [1,1,1,1])
-        or (tira == [2,2,2,2])
-        for tira in possiveis])
-        #print(mp)
         return ganhou
+        if ganhou == [none]:
+            print ("Deu velha!!")
 
     def clicou(self, evento):
         self.e_casa.html = ''
         e_peca = xoj.pop()
         self.tipo_peca = XO.index(e_peca.src) + 1
-        #print(self.tipo_peca)
+        print(self.tipo_peca)
         self.e_casa <= e_peca
-        if self.ganhou():
-            print("GANHOU!!!")
+        ganhou = self.ganhou()
+        if ganhou:
+            print("GANHOU!!!", ganhou)
+            #return
+            [c.e_casa <= blues.pop()
+            for tira in ganhou for c in tira]
         #print(len(xoj))
 
 matriz_casas = []
@@ -59,14 +83,15 @@ matriz_casas = []
 for m in range(2):
     linha = html.TR()
     campo <= linha
-    for n in range(8):
+    for p in range((n*n)/2):
         coluna = html.TD(xo.pop())
         linha <= coluna
-for m in range(4):
+for m in range(n):
     linha = html.TR()
     campo <= linha
-    for n in range(4):
+    for p in range(n):
         coluna = Casa(branco.pop())
         matriz_casas.append(coluna)
         #matriz_casas += [coluna]
         linha <= coluna.e_casa
+
